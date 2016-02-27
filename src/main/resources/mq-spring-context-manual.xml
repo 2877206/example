@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+       <bean name="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" >
+              <property name="userName" value="longooc"></property>
+              <property name="password" value="111111"></property>
+              <property name="brokerURL" value="tcp://192.168.31.130:61616"></property>
+       </bean>
+
+       <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+              <property name="connectionFactory" ref="targetConnectionFactory" />
+              <property name="maxConnections" value="5" />
+       </bean>
+
+       <bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+              <property name="targetConnectionFactory" ref="pooledConnectionFactory" />
+       </bean>
+
+       <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+              <property name="connectionFactory" ref="connectionFactory" />
+              <property name="defaultDestinationName" value="spring-hello"></property>
+              <property name="pubSubDomain" value="false"></property>
+       </bean>
+
+       <bean id="messageReceiver" class=" lyw.study.activemq.queue.spring.manual.ProxyJMSConsumer">
+              <property name="jmsTemplate" ref="jmsTemplate"></property>
+       </bean>
+</beans>
